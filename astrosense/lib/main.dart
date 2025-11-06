@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'theme/app_theme.dart';
-import 'screens/login_page.dart';
+import 'screens/login_page_premium.dart';
 import 'screens/dashboard_page.dart';
 import 'screens/profile_page.dart';
 
-/// AstroSense - A Modern Luxury Astrology Experience
+/// AstroSense - A Premium Multi-Billion Dollar Quality App
 void main() {
   runApp(const AstroSenseApp());
 }
@@ -21,7 +21,7 @@ class AstroSenseApp extends StatelessWidget {
       theme: AppTheme.buildTheme(),
       initialRoute: '/',
       routes: {
-        '/': (context) => const LoginPage(),
+        '/': (context) => const LoginPagePremium(),
         '/dashboard': (context) => const DashboardPage(),
         '/profile': (context) => const ProfilePage(),
       },

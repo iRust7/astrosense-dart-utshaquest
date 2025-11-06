@@ -11,18 +11,28 @@ import '../theme/app_theme.dart';
 
 /// Main dashboard with insights and categories
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({super.key});
+  final String? userName;
+  final String? zodiacSign;
+  
+  const DashboardPage({super.key, this.userName, this.zodiacSign});
 
   @override
   _DashboardPageState createState() => _DashboardPageState();
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  String _userName = 'Seeker';
-  String _zodiacSign = 'Cosmic Soul';
+  late String _userName;
+  late String _zodiacSign;
   String _currentInsight = '';
   String _currentCategory = 'General';
   bool _insightLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _userName = widget.userName ?? 'Seeker';
+    _zodiacSign = widget.zodiacSign ?? 'Cosmic Soul';
+  }
 
   @override
   void didChangeDependencies() {
