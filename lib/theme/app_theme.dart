@@ -8,6 +8,8 @@ class AppColors {
   static const backgroundDark = Color(0xFF050816);
   static const surfaceDark = Color(0xFF0B1120);
   static const gradientEnd = Color(0xFF111827);
+  static const textPrimary = Colors.white;
+  static final textSecondary = Colors.white.withOpacity(0.7);
 }
 
 /// Application theme configuration

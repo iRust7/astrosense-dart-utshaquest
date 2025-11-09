@@ -4,23 +4,26 @@ import 'package:shimmer/shimmer.dart';
 import 'dart:ui';
 import '../theme/app_theme.dart';
 import '../widgets/premium_gradient_background.dart';
-import 'dashboard_page.dart';
+import '../widgets/cosmic_logo.dart';
+import 'home_screen.dart';
 
-/// Premium Login Page with modern UI and animations
-class LoginPagePremium extends StatefulWidget {
-  const LoginPagePremium({super.key});
+/// Premium Login Screen with modern UI and animations
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<LoginPagePremium> createState() => _LoginPagePremiumState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginPagePremiumState extends State<LoginPagePremium>
+class _LoginScreenState extends State<LoginScreen>
     with SingleTickerProviderStateMixin {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _zodiacController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   bool _showContent = false;
+  bool _isPasswordVisible = false;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -69,6 +72,7 @@ class _LoginPagePremiumState extends State<LoginPagePremium>
   void dispose() {
     _nameController.dispose();
     _zodiacController.dispose();
+    _passwordController.dispose();
     _animationController.dispose();
     super.dispose();
   }
@@ -85,7 +89,7 @@ class _LoginPagePremiumState extends State<LoginPagePremium>
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => DashboardPage(
+          pageBuilder: (context, animation, secondaryAnimation) => HomeScreen(
             userName: _nameController.text,
             zodiacSign: _zodiacController.text,
           ),
@@ -139,39 +143,8 @@ class _LoginPagePremiumState extends State<LoginPagePremium>
   Widget _buildHeader() {
     return Column(
       children: [
-        // Premium Logo/Icon with glow effect
-        Container(
-          width: 100,
-          height: 100,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                AppColors.primaryPurple,
-                AppColors.accentGold,
-              ],
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primaryPurple.withOpacity(0.5),
-                blurRadius: 40,
-                spreadRadius: 5,
-              ),
-              BoxShadow(
-                color: AppColors.accentGold.withOpacity(0.3),
-                blurRadius: 60,
-                spreadRadius: 10,
-              ),
-            ],
-          ),
-          child: const Icon(
-            Icons.auto_awesome,
-            size: 50,
-            color: Colors.white,
-          ),
-        ),
+        // Premium Logo/Icon with glow effect using CosmicLogo widget
+        const CosmicLogo(size: 100, animate: true),
         const SizedBox(height: 32),
         
         // App Title with shimmer effect
@@ -281,6 +254,25 @@ class _LoginPagePremiumState extends State<LoginPagePremium>
                     return null;
                   },
                 ),
+                const SizedBox(height: 20),
+                
+                // Password Field
+                _buildPremiumTextField(
+                  controller: _passwordController,
+                  label: 'Password',
+                  hint: 'Create a password',
+                  icon: Icons.lock_outline,
+                  isPassword: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please create a password';
+                    }
+                    if (value.length < 6) {
+                      return 'Password must be at least 6 characters';
+                    }
+                    return null;
+                  },
+                ),
               ],
             ),
           ),
@@ -296,6 +288,7 @@ class _LoginPagePremiumState extends State<LoginPagePremium>
     required IconData icon,
     required String? Function(String?) validator,
     bool isDropdown = false,
+    bool isPassword = false,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -313,6 +306,7 @@ class _LoginPagePremiumState extends State<LoginPagePremium>
         TextFormField(
           controller: controller,
           readOnly: isDropdown,
+          obscureText: isPassword && !_isPasswordVisible,
           validator: validator,
           style: GoogleFonts.inter(
             fontSize: 16,
@@ -328,7 +322,20 @@ class _LoginPagePremiumState extends State<LoginPagePremium>
             prefixIcon: Icon(icon, color: AppColors.accentGold, size: 22),
             suffixIcon: isDropdown
                 ? const Icon(Icons.arrow_drop_down, color: AppColors.accentGold)
-                : null,
+                : isPassword
+                    ? IconButton(
+                        icon: Icon(
+                          _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                          color: AppColors.accentGold,
+                          size: 20,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
+                      )
+                    : null,
             filled: true,
             fillColor: Colors.white.withOpacity(0.05),
             contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
@@ -400,10 +407,10 @@ class _LoginPagePremiumState extends State<LoginPagePremium>
                     ],
                   ),
                 ),
-                const SizedBox(height: 8),
-                SizedBox(
-                  height: 280,
-                  child: ListView.builder(
+                Flexible(
+                  child: SizedBox(
+                    height: 260,
+                    child: ListView.builder(
                     itemCount: _zodiacSigns.length,
                     itemBuilder: (context, index) {
                       return InkWell(

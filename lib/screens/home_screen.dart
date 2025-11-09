@@ -6,26 +6,29 @@ import '../widgets/gradient_background.dart';
 import '../widgets/glassmorphic_card.dart';
 import '../widgets/category_tile.dart';
 import '../widgets/glowing_avatar.dart';
+import '../widgets/zodiac_icon.dart';
+import '../widgets/shimmer_placeholder.dart';
 import '../engine/insight_engine.dart';
 import '../theme/app_theme.dart';
 
-/// Main dashboard with insights and categories
-class DashboardPage extends StatefulWidget {
+/// Main home screen with insights and categories
+class HomeScreen extends StatefulWidget {
   final String? userName;
   final String? zodiacSign;
   
-  const DashboardPage({super.key, this.userName, this.zodiacSign});
+  const HomeScreen({super.key, this.userName, this.zodiacSign});
 
   @override
-  _DashboardPageState createState() => _DashboardPageState();
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _DashboardPageState extends State<DashboardPage> {
+class _HomeScreenState extends State<HomeScreen> {
   late String _userName;
   late String _zodiacSign;
   String _currentInsight = '';
   String _currentCategory = 'General';
   bool _insightLoaded = false;
+  bool _isLoadingInsight = false;
 
   @override
   void initState() {
@@ -54,25 +57,34 @@ class _DashboardPageState extends State<DashboardPage> {
   void _loadInsight(String category) {
     setState(() {
       _currentCategory = category;
-      switch (category) {
-        case 'General':
-          _currentInsight = InsightEngine.generateGeneralInsight(_userName, _zodiacSign);
-          break;
-        case 'Emotional':
-          _currentInsight = InsightEngine.generateEmotionalInsight(_userName, _zodiacSign);
-          break;
-        case 'Career':
-          _currentInsight = InsightEngine.generateCareerInsight(_userName, _zodiacSign);
-          break;
-        case 'Relationship':
-          _currentInsight = InsightEngine.generateRelationshipInsight(_userName, _zodiacSign);
-          break;
-        case 'Affirmation':
-          _currentInsight = InsightEngine.generateAffirmation();
-          break;
-        default:
-          _currentInsight = InsightEngine.generateGeneralInsight(_userName, _zodiacSign);
-      }
+      _isLoadingInsight = true;
+    });
+
+    // Simulate loading with shimmer effect
+    Future.delayed(const Duration(milliseconds: 800), () {
+      if (!mounted) return;
+      setState(() {
+        _isLoadingInsight = false;
+        switch (category) {
+          case 'General':
+            _currentInsight = InsightEngine.generateGeneralInsight(_userName, _zodiacSign);
+            break;
+          case 'Emotional':
+            _currentInsight = InsightEngine.generateEmotionalInsight(_userName, _zodiacSign);
+            break;
+          case 'Career':
+            _currentInsight = InsightEngine.generateCareerInsight(_userName, _zodiacSign);
+            break;
+          case 'Relationship':
+            _currentInsight = InsightEngine.generateRelationshipInsight(_userName, _zodiacSign);
+            break;
+          case 'Affirmation':
+            _currentInsight = InsightEngine.generateAffirmation();
+            break;
+          default:
+            _currentInsight = InsightEngine.generateGeneralInsight(_userName, _zodiacSign);
+        }
+      });
     });
   }
 
@@ -271,66 +283,72 @@ class _DashboardPageState extends State<DashboardPage> {
                               child: ScaleTransition(scale: animation, child: child),
                             );
                           },
-                          child: GlassmorphicCard(
-                            key: ValueKey(_currentInsight),
-                            showGlow: true,
-                            child: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.auto_awesome, color: AppColors.accentGold, size: 24),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Text(
-                                          _zodiacSign,
-                                          style: GoogleFonts.poppins(
+                          child: _isLoadingInsight
+                              ? const InsightShimmerPlaceholder()
+                              : GlassmorphicCard(
+                                  key: ValueKey(_currentInsight),
+                                  showGlow: true,
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            ZodiacIcon(
+                                              zodiacSign: _zodiacSign,
+                                              size: 40,
+                                              showGlow: true,
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Expanded(
+                                              child: Text(
+                                                _zodiacSign,
+                                                style: GoogleFonts.poppins(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: AppColors.accentGold,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Text(
+                                          _currentInsight.isNotEmpty 
+                                              ? _currentInsight 
+                                              : 'Loading your cosmic insight...',
+                                          style: GoogleFonts.inter(
                                             fontSize: 16,
-                                            fontWeight: FontWeight.w600,
-                                            color: AppColors.accentGold,
+                                            height: 1.6,
+                                            color: Colors.white.withAlpha(230),
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    _currentInsight.isNotEmpty 
-                                        ? _currentInsight 
-                                        : 'Loading your cosmic insight...',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 16,
-                                      height: 1.6,
-                                      color: Colors.white.withAlpha(230),
+                                        const SizedBox(height: 24),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            TextButton.icon(
+                                              onPressed: () {},
+                                              icon: const Icon(Icons.share, size: 16, color: Colors.white54),
+                                              label: Text(
+                                                'Share',
+                                                style: GoogleFonts.inter(fontSize: 12, color: Colors.white54),
+                                              ),
+                                            ),
+                                            TextButton.icon(
+                                              onPressed: () {},
+                                              icon: const Icon(Icons.bookmark_border, size: 16, color: Colors.white54),
+                                              label: Text(
+                                                'Save',
+                                                style: GoogleFonts.inter(fontSize: 12, color: Colors.white54),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  const SizedBox(height: 24),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      TextButton.icon(
-                                        onPressed: () {},
-                                        icon: const Icon(Icons.share, size: 16, color: Colors.white54),
-                                        label: Text(
-                                          'Share',
-                                          style: GoogleFonts.inter(fontSize: 12, color: Colors.white54),
-                                        ),
-                                      ),
-                                      TextButton.icon(
-                                        onPressed: () {},
-                                        icon: const Icon(Icons.bookmark_border, size: 16, color: Colors.white54),
-                                        label: Text(
-                                          'Save',
-                                          style: GoogleFonts.inter(fontSize: 12, color: Colors.white54),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                                ),
                         ),
                       ),
                     ],

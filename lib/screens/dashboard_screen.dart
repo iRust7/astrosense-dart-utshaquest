@@ -7,24 +7,26 @@ import '../widgets/gradient_background.dart';
 import '../widgets/glassmorphic_card.dart';
 import '../widgets/category_tile.dart';
 import '../widgets/glowing_avatar.dart';
-import 'profile_page.dart';
+import '../widgets/zodiac_icon.dart';
+import '../widgets/shimmer_placeholder.dart';
+import 'profile_screen.dart';
 
-/// Premium Dashboard with modern UI and shimmer loading effects
-class DashboardPagePremium extends StatefulWidget {
+/// Premium Dashboard Screen with modern UI and shimmer loading effects
+class DashboardScreen extends StatefulWidget {
   final String userName;
   final String zodiacSign;
 
-  const DashboardPagePremium({
+  const DashboardScreen({
     super.key,
     required this.userName,
     required this.zodiacSign,
   });
 
   @override
-  State<DashboardPagePremium> createState() => _DashboardPagePremiumState();
+  State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardPagePremiumState extends State<DashboardPagePremium>
+class _DashboardScreenState extends State<DashboardScreen>
     with SingleTickerProviderStateMixin {
   late String _userName;
   late String _zodiacSign;
@@ -64,13 +66,13 @@ class _DashboardPagePremiumState extends State<DashboardPagePremium>
       setState(() {
         switch (category) {
           case 'Emotional':
-            _currentInsight = InsightEngine.generateEmotionalInsight();
+            _currentInsight = InsightEngine.generateEmotionalInsight(_userName, _zodiacSign);
             break;
           case 'Career':
-            _currentInsight = InsightEngine.generateCareerInsight();
+            _currentInsight = InsightEngine.generateCareerInsight(_userName, _zodiacSign);
             break;
           case 'Relationship':
-            _currentInsight = InsightEngine.generateRelationshipInsight();
+            _currentInsight = InsightEngine.generateRelationshipInsight(_userName, _zodiacSign);
             break;
           case 'Affirmation':
             _currentInsight = InsightEngine.generateAffirmation();
@@ -176,7 +178,7 @@ class _DashboardPagePremiumState extends State<DashboardPagePremium>
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ProfilePage(userName: _userName),
+                            builder: (context) => ProfileScreen(userName: _userName),
                           ),
                         );
                       },
@@ -263,7 +265,7 @@ class _DashboardPagePremiumState extends State<DashboardPagePremium>
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ProfilePage(userName: _userName),
+                  builder: (context) => ProfileScreen(userName: _userName),
                 ),
               );
             },

@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:ui';
 import '../theme/app_theme.dart';
+import '../config/app_images.dart';
 
 /// Premium animated gradient background with particles effect
 class PremiumGradientBackground extends StatefulWidget {
   final Widget child;
+  final bool showImage;
   
-  const PremiumGradientBackground({super.key, required this.child});
+  const PremiumGradientBackground({
+    super.key,
+    required this.child,
+    this.showImage = true,
+  });
 
   @override
   State<PremiumGradientBackground> createState() => _PremiumGradientBackgroundState();
@@ -60,6 +67,18 @@ class _PremiumGradientBackgroundState extends State<PremiumGradientBackground>
           ),
           child: Stack(
             children: [
+              // Background cosmic image (optional)
+              if (widget.showImage)
+                Positioned.fill(
+                  child: CachedNetworkImage(
+                    imageUrl: AppImages.cosmicBackground,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => const SizedBox(),
+                    errorWidget: (context, url, error) => const SizedBox(),
+                    color: Colors.black.withOpacity(0.7),
+                    colorBlendMode: BlendMode.darken,
+                  ),
+                ),
               // Subtle moving particles effect
               Positioned.fill(
                 child: CustomPaint(

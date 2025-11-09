@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'theme/app_theme.dart';
-import 'screens/login_page_premium.dart';
-import 'screens/dashboard_page.dart';
-import 'screens/profile_page.dart';
+import 'screens/login_screen.dart';
+import 'screens/home_screen.dart';
+import 'screens/profile_screen.dart';
 
-/// AstroSense - A Premium Multi-Billion Dollar Quality App
+/// AstroSense - A Premium Astrology Game Experience
 void main() {
   runApp(const AstroSenseApp());
 }
@@ -21,18 +21,18 @@ class AstroSenseApp extends StatelessWidget {
       theme: AppTheme.buildTheme(),
       initialRoute: '/',
       routes: {
-        '/': (context) => const LoginPagePremium(),
-        '/dashboard': (context) => const DashboardPage(),
-        '/profile': (context) => const ProfilePage(),
+        '/': (context) => const LoginScreen(),
+        '/home': (context) => const HomeScreen(),
+        '/profile': (context) => const ProfileScreen(),
       },
       onGenerateRoute: (settings) {
-        if (settings.name == '/dashboard' || settings.name == '/profile') {
+        if (settings.name == '/home' || settings.name == '/profile') {
           return PageRouteBuilder(
             settings: settings,
             pageBuilder: (context, animation, secondaryAnimation) {
-              return settings.name == '/dashboard'
-                  ? const DashboardPage()
-                  : const ProfilePage();
+              return settings.name == '/home'
+                  ? const HomeScreen()
+                  : const ProfileScreen();
             },
             transitionsBuilder: (context, animation, secondaryAnimation, child) {
               const begin = Offset(0.0, 0.1);

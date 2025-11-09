@@ -7,19 +7,29 @@ import '../widgets/glassmorphic_card.dart';
 import '../widgets/glowing_avatar.dart';
 import '../theme/app_theme.dart';
 
-/// Profile and settings page
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+/// Profile and settings screen
+class ProfileScreen extends StatefulWidget {
+  final String? userName;
+  final String? zodiacSign;
+  
+  const ProfileScreen({super.key, this.userName, this.zodiacSign});
 
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
-  String _userName = 'Seeker';
-  String _zodiacSign = 'Cosmic Soul';
+class _ProfileScreenState extends State<ProfileScreen> {
+  late String _userName;
+  late String _zodiacSign;
   bool _notificationsEnabled = true;
   bool _profileLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _userName = widget.userName ?? 'Seeker';
+    _zodiacSign = widget.zodiacSign ?? 'Cosmic Soul';
+  }
 
   @override
   void didChangeDependencies() {
