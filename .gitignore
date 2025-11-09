@@ -81,7 +81,6 @@ app.*.map.json
 *.jks
 
 # Web
-lib/generated_plugin_registrant.dart
 
 # Windows/Linux/macOS
 windows/flutter/generated_plugin_registrant.cc

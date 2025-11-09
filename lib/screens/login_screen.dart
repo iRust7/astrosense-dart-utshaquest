@@ -5,6 +5,7 @@ import 'dart:ui';
 import '../theme/app_theme.dart';
 import '../widgets/premium_gradient_background.dart';
 import '../widgets/cosmic_logo.dart';
+import '../widgets/lottie_animation.dart';
 import 'home_screen.dart';
 
 /// Premium Login Screen with modern UI and animations
@@ -392,13 +393,19 @@ class _LoginScreenState extends State<LoginScreen>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Select Zodiac Sign',
-                        style: GoogleFonts.poppins(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+                      Row(
+                        children: [
+                          const MagicSparkleAnimation(size: 40),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Select Zodiac Sign',
+                            style: GoogleFonts.poppins(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
                       ),
                       IconButton(
                         icon: const Icon(Icons.close, color: Colors.white70, size: 20),
@@ -436,14 +443,17 @@ class _LoginScreenState extends State<LoginScreen>
                                 size: 20,
                               ),
                               const SizedBox(width: 16),
-                              Text(
-                                _zodiacSigns[index],
-                                style: GoogleFonts.inter(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
+                              Expanded(
+                                child: Text(
+                                  _zodiacSigns[index],
+                                  style: GoogleFonts.inter(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
+                              const MagicSparkleAnimation(size: 24),
                             ],
                           ),
                         ),

@@ -7,7 +7,7 @@ import '../widgets/glassmorphic_card.dart';
 import '../widgets/category_tile.dart';
 import '../widgets/glowing_avatar.dart';
 import '../widgets/zodiac_icon.dart';
-import '../widgets/shimmer_placeholder.dart';
+import '../widgets/lottie_animation.dart';
 import '../engine/insight_engine.dart';
 import '../theme/app_theme.dart';
 
@@ -284,7 +284,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             );
                           },
                           child: _isLoadingInsight
-                              ? const InsightShimmerPlaceholder()
+                              ? const LoadingPlaceholder(
+                                  message: 'Channeling cosmic insights...',
+                                  animationSize: 100,
+                                )
                               : GlassmorphicCard(
                                   key: ValueKey(_currentInsight),
                                   showGlow: true,
