@@ -10,6 +10,8 @@ import '../widgets/zodiac_icon.dart';
 import '../widgets/lottie_animation.dart';
 import '../engine/insight_engine.dart';
 import '../theme/app_theme.dart';
+import '../models/user_progress.dart';
+import 'daily_ritual_screen.dart';
 
 /// Main home screen with insights and categories
 class HomeScreen extends StatefulWidget {
@@ -29,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String _currentCategory = 'General';
   bool _insightLoaded = false;
   bool _isLoadingInsight = false;
+  UserProgress _progress = UserProgress();
 
   @override
   void initState() {
@@ -141,51 +144,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
 
-              // Energy status card
+              // Progress Bar
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: GlassmorphicCard(
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 50,
-                        height: 50,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: LinearGradient(
-                            colors: [AppColors.primaryPurple, AppColors.accentGold],
-                          ),
-                        ),
-                        child: const Icon(Icons.energy_savings_leaf, color: Colors.white),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Your Energy Today',
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                color: Colors.white.withAlpha(153),
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              InsightEngine.generateEnergyStatus(),
-                              style: GoogleFonts.poppins(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.accentGold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Icon(Icons.arrow_forward_ios, color: Colors.white38, size: 16),
-                    ],
-                  ),
-                ),
+                child: _buildProgressStats(),
+              ),
+              const SizedBox(height: 16),
+
+              // Main CTA - Begin Today's Ritual
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: _buildDailyRitualCTA(),
               ),
               const SizedBox(height: 24),
 
@@ -359,6 +328,191 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProgressStats() {
+    return GlassmorphicCard(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildStatColumn('⭐', '${_progress.stardust}', 'Stardust'),
+          Container(width: 1, height: 40, color: Colors.white24),
+          _buildStatColumn('🎯', 'Lv ${_progress.level}', 'Level'),
+          Container(width: 1, height: 40, color: Colors.white24),
+          _buildStatColumn('🔥', '${_progress.currentStreak}', 'Streak'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatColumn(String icon, String value, String label) {
+    return Column(
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(icon, style: const TextStyle(fontSize: 18)),
+            const SizedBox(width: 4),
+            Text(
+              value,
+              style: GoogleFonts.orbitron(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: GoogleFonts.poppins(
+            fontSize: 11,
+            color: Colors.white60,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDailyRitualCTA() {
+    final hasCompletedToday = _progress.hasCompletedTodayRitual;
+    
+    return GestureDetector(
+      onTap: hasCompletedToday ? null : () async {
+        final result = await Navigator.push<UserProgress>(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DailyRitualScreen(
+              userName: _userName,
+              zodiacSign: _zodiacSign,
+              initialProgress: _progress,
+            ),
+          ),
+        );
+        if (result != null) {
+          setState(() {
+            _progress = result;
+          });
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          gradient: hasCompletedToday
+              ? LinearGradient(
+                  colors: [
+                    Colors.grey.withOpacity(0.3),
+                    Colors.grey.withOpacity(0.2),
+                  ],
+                )
+              : const LinearGradient(
+                  colors: [
+                    Color(0xFF6A4C93),
+                    Color(0xFF9B59B6),
+                  ],
+                ),
+          boxShadow: hasCompletedToday ? null : [
+            BoxShadow(
+              color: const Color(0xFF6A4C93).withOpacity(0.6),
+              blurRadius: 30,
+              spreadRadius: 5,
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Stack(
+            children: [
+              // Animated gradient overlay
+              if (!hasCompletedToday)
+                Positioned.fill(
+                  child: AnimatedBuilder(
+                    animation: const AlwaysStoppedAnimation(0.0),
+                    builder: (context, child) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Colors.white.withOpacity(0.1),
+                              Colors.transparent,
+                              Colors.white.withOpacity(0.1),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 70,
+                      height: 70,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withOpacity(0.2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.white.withOpacity(0.3),
+                            blurRadius: 20,
+                            spreadRadius: 3,
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Text(
+                          hasCompletedToday ? '✓' : '🔮',
+                          style: const TextStyle(fontSize: 36),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            hasCompletedToday
+                                ? 'Ritual Complete!'
+                                : 'Begin Today\'s Ritual',
+                            style: GoogleFonts.cinzel(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            hasCompletedToday
+                                ? 'Come back tomorrow for your next journey'
+                                : 'Connect with the cosmos and unlock your daily insights',
+                            style: GoogleFonts.poppins(
+                              fontSize: 13,
+                              color: Colors.white.withOpacity(0.9),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (!hasCompletedToday)
+                      const Icon(
+                        Icons.arrow_forward_ios,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
