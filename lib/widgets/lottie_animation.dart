@@ -62,17 +62,20 @@ class LoadingPlaceholder extends StatelessWidget {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           MagicCubeLoading(size: animationSize),
           if (message != null) ...[
-            const SizedBox(height: 24),
-            Text(
-              message!,
-              style: const TextStyle(
-                color: Colors.white70,
-                fontSize: 14,
+            const SizedBox(height: 16),
+            Flexible(
+              child: Text(
+                message!,
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 14,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
           ],
         ],
